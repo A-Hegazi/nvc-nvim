@@ -1,0 +1,18 @@
+# Neovim states
+*.swp
+*.swo
+*.tmp
+Session.vim
+
+# Lazy.nvim caches
+.cache/
+state.json
+lazy-lock.json.bak
+
+# If someone accidentally dropped a full runtime here
+nvim/
+site/
+
+# OS junk
+.DS_Store
+Thumbs.db
