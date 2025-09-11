@@ -30,9 +30,8 @@ return {
   {
     "saghen/blink.cmp",
     opts = {
-      -- keymap = {
-      --   preset = "default",
-      --   -- -- Trigger menu
+      keymap = {
+        preset = "default",
       --   -- ['<C-space>'] = { function(cmp) cmp.show({ providers = { 'snippets' } }) end },
       --   -- ['<C-e>'] = false,
       --   -- ["<C-@>"]     = { "show" },
@@ -40,9 +39,9 @@ return {
       ["<C-u>"]   = { "scroll_documentation_up" },
       ["<C-k>"]   = { "show_documentation" },
       ["<C-j>"]   = { "hide_documentation" },
-      ["<C-S>"]   = { "show_signature" },
+      ["<C-i>"]   = { "show_signature" },
       ["<C-h>"]   = { "hide_signature" },
-      -- },
+      },
       completion = {
         menu = { border = 'rounded' },
         documentation = { window = { border = 'rounded' } },
