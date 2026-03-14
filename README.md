@@ -310,6 +310,8 @@ if (Test-Path "$env:LOCALAPPDATA\nvim-old") {
 | Noice                         | [folke/noice.nvim](https://github.com/folke/noice.nvim)                         |                                                       | Installed   |
 | Conform                         | [stevearc/conform.nvim](https://github.com/stevearc/conform.nvim)                         |                                                   | Installed   |
 | Linting                         | [mfussenegger/nvim-lint](https://github.com/mfussenegger/nvim-lint)                         |                                                   | Installed   |
+| Rustaceanvim                    | [mrcjkb/rustaceanvim](https://github.com/mrcjkb/rustaceanvim)                         | Rust tools / rust-analyzer integration            | Installed   |
+| Crates                          | [saecki/crates.nvim](https://github.com/saecki/crates.nvim)                         | Manage Cargo.toml dependencies                    | Installed   |
 | Trouble                         | [folke/trouble.nvim](https://github.com/folke/trouble.nvim)                         |                                                   | Installed   |
 | Render Markdown                         | [MeanderingProgrammer/render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) |                                     | Installed   |
 | indent-blankline.nvim (disabled)                         | [lukas-reineke/indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim)                         | Comes with NvChad but replaced with Snacks               | Disabled    |
@@ -324,8 +326,8 @@ if (Test-Path "$env:LOCALAPPDATA\nvim-old") {
 | CopilotChat                         | [CopilotC-Nvim/CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim)                         |                                                   | Installed   |
 
 </details>
-[🔼 Back to top](#-table-of-contents)
 
+[🔼 Back to top](#-table-of-contents)
 ---
 
 ## ⌨️ 12. Keymaps
@@ -575,10 +577,12 @@ if (Test-Path "$env:LOCALAPPDATA\nvim-old") {
 | Worktree | Worktree: Create | Normal | `<Leader> g w c` |
 | Worktree | Worktree: Switch | Normal | `<Leader> g w s` |
 | Worktree | Worktree: Delete | Normal | `<Leader> g w d` |
+| Rust / LSP | Toggle inlay hints | Normal | `<Leader> l h` |
+| Rust / LSP | Hover / type info (terminal-dependent) | Normal | `<M-C-a>` |
 
 </details>
-[🔼 Back to top](#-table-of-contents)
 
+[🔼 Back to top](#-table-of-contents)
 ---
 
 🎉 That’s it 
