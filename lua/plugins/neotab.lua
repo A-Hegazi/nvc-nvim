@@ -3,8 +3,8 @@ return {
         "kawre/neotab.nvim",
         event = "InsertEnter",
         opts = {
-            tabkey = "<A-l>",
-            reverse_key = "<A-k>",
+            tabkey = "<A-d>",
+            reverse_key = "<A-a>",
             act_as_tab = false,
             behavior = "nested",
             pairs = {
