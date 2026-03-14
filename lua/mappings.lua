@@ -15,7 +15,7 @@ map("n", "<C-Up>", "<Cmd>resize +2<CR>", { desc = "Increase window height" })
 map("n", "<C-Down>", "<Cmd>resize -2<CR>", { desc = "Decrease window height" })
 map("n", "<C-Left>", "<Cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
 map("n", "<C-Right>", "<Cmd>vertical resize +2<CR>", { desc = "Increase window width" })
-map("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) 
+map("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 
 -- Better J behavior
 map("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
@@ -32,28 +32,29 @@ map("v", "<", "<gv", { desc = "Indent left and reselect" })
 map("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 -- Paste stuff
-map("x", "<leader>l", [["_dP]],{ desc = "Paste over selection without overwriting clipboard" })
+map("x", "<leader>l", [["_dP]], { desc = "Paste over selection without overwriting clipboard" })
 map("v", "<leader>P", '"_dp', { desc = "Paste over selection and after courser without overwriting clipboard" })
 
 -- leader d delete wont remember as yanked/clipboard when delete pasting
-map({ "n", "v" }, "<leader>d", [["_d]],{ desc = "Delete without yanking" })
+map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
 
 
 -- Replace the word cursor is on globally
-map("n", "<leader>W", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],{ desc = "Replace word cursor is on globally" })
+map("n", "<leader>W", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    { desc = "Replace word cursor is on globally" })
 
 -- tab stuff
-map("n", "<leader>to", "<cmd>tabnew<CR>",{ desc = "open new tab" })
-map("n", "<leader>tx", "<cmd>tabclose<CR>",{ desc = "close current tab" })
-map("n", "<leader>tn", "<cmd>tabn<CR>",{ desc = "go to next tab" })
-map("n", "<leader>tp", "<cmd>tabp<CR>",{ desc = "go to pre tab" })
-map("n", "<leader>tf", "<cmd>tabnew %<CR>",{ desc = "open current tab in new tab" })
+map("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "open new tab" })
+map("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "close current tab" })
+map("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "go to next tab" })
+map("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "go to pre tab" })
+map("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "open current tab in new tab" })
 
 -- Copy filepath to the clipboard
 map("n", "<leader>i", function()
-  local filePath = vim.fn.expand("%:~") -- Gets the file path relative to the home directory
-  vim.fn.setreg("+", filePath) -- Copy the file path to the clipboard register
-  print("File path copied to clipboard: " .. filePath) -- Optional: print message to confirm
+    local filePath = vim.fn.expand("%:~")                -- Gets the file path relative to the home directory
+    vim.fn.setreg("+", filePath)                         -- Copy the file path to the clipboard register
+    print("File path copied to clipboard: " .. filePath) -- Optional: print message to confirm
 end, { desc = "Copy file path to clipboard" })
 
 -- Toggle LSP diagnostics visibility
@@ -97,11 +98,9 @@ map("n", "<leader>ls", vim.diagnostic.setloclist, { desc = "LSP diagnostic locli
 
 -- Change format file to leader + z
 map({ "n", "x" }, "<leader>z", function()
-  require("conform").format { lsp_fallback = true }
+    require("conform").format { lsp_fallback = true }
 end, { desc = "general format file" })
 
 -- Change sheetche keymap to <leader>c
 vim.keymap.del("n", "<leader>ch")
 map("n", "<leader>c", "<cmd>NvCheatsheet<CR>", { desc = "toggle nvcheatsheet" })
-
-

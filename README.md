@@ -580,6 +580,8 @@ if (Test-Path "$env:LOCALAPPDATA\nvim-old") {
 | Rust / LSP | Peek inlay hints until next move | Normal | `<Leader> l p` |
 | Rust / LSP | Toggle inlay hints | Normal | `<Leader> l h` |
 | Rust / LSP | Hover / type info (terminal-dependent) | Normal | `<M-C-a>` |
+| Neotab | Jump out of pair forward | Insert | `<A-e>` |
+| Neotab | Jump out of pair backward | Insert | `<A-q>` |
 
 </details>
 
