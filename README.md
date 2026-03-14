@@ -577,6 +577,7 @@ if (Test-Path "$env:LOCALAPPDATA\nvim-old") {
 | Worktree | Worktree: Create | Normal | `<Leader> g w c` |
 | Worktree | Worktree: Switch | Normal | `<Leader> g w s` |
 | Worktree | Worktree: Delete | Normal | `<Leader> g w d` |
+| Rust / LSP | Peek inlay hints until next move | Normal | `<Leader> l p` |
 | Rust / LSP | Toggle inlay hints | Normal | `<Leader> l h` |
 | Rust / LSP | Hover / type info (terminal-dependent) | Normal | `<M-C-a>` |
 
