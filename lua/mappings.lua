@@ -95,6 +95,8 @@ map("n", "<leader>ft", function() require("nvchad.themes").open() end, { desc = 
 -- global lsp mappings
 vim.keymap.del("n", "<leader>ds")
 map("n", "<leader>ls", vim.diagnostic.setloclist, { desc = "LSP diagnostic loclist" })
+-- Show diagnostic error under cursor in a floating window
+map("n", "gl", vim.diagnostic.open_float, { desc = "Show floating diagnostic" })
 
 -- Change format file to leader + z
 map({ "n", "x" }, "<leader>z", function()
