@@ -48,7 +48,7 @@ return {
                 ghost_text = { enabled = true },
             },
             signature = { window = { border = 'rounded' } },
-            sources = { default = { "lsp", "path", "buffer" } },
+            sources = { default = { "lsp", "path", "snippets", "buffer" } },
         },
     },
 

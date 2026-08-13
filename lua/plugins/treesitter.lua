@@ -1,86 +1,108 @@
 return {
-{
+  {
     "nvim-treesitter/nvim-treesitter",
+    -- This legacy branch matches Neovim 0.11 and the current NvChad setup.
+    -- Migrate to the maintained Treesitter branch together with Neovim 0.12.
+    branch = "master",
     event = { "BufReadPre", "BufNewFile" },
     build = ":TSUpdate",
+    dependencies = {
+      {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        branch = "master",
+      },
+    },
     config = function()
-        -- import nvim-treesitter plugin
-        local treesitter = require("nvim-treesitter.configs")
-
-        -- configure treesitter
-        treesitter.setup({ -- enable syntax highlighting
-            highlight = {
-                enable = true,
+      require("nvim-treesitter.configs").setup {
+        highlight = { enable = true },
+        indent = { enable = true },
+        ensure_installed = {
+          "bash",
+          "c",
+          "css",
+          "dockerfile",
+          "gitignore",
+          "go",
+          "graphql",
+          "html",
+          "http",
+          "java",
+          "javascript",
+          "json",
+          "lua",
+          "markdown",
+          "markdown_inline",
+          "prisma",
+          "python",
+          "query",
+          "regex",
+          "ron",
+          "rust",
+          "svelte",
+          "tsx",
+          "typescript",
+          "vim",
+          "vimdoc",
+          "yaml",
+        },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "<CR>",
+            node_incremental = "<CR>",
+            scope_incremental = "<TAB>",
+            node_decremental = "<S-TAB>",
+          },
+        },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["af"] = "@function.outer",
+              ["if"] = "@function.inner",
+              ["ac"] = "@class.outer",
+              ["ic"] = "@class.inner",
+              ["aa"] = "@parameter.outer",
+              ["ia"] = "@parameter.inner",
             },
-            -- enable indentation
-            indent = { enable = true },
-
-            -- ensure these languages parsers are installed
-            ensure_installed = {
-                "json",
-                "javascript",
-                "typescript",
-                "tsx",
-                "go",
-                "yaml",
-                "html",
-                "css",
-                "python",
-                "http",
-                "prisma",
-                "markdown",
-                "markdown_inline",
-                "svelte",
-                "graphql",
-                "bash",
-                "lua",
-                "vim",
-                "dockerfile",
-                "gitignore",
-                "query",
-                "vimdoc",
-                "c",
-                "java",
-                "rust",
-                "ron",
-                "regex",
-                "vim",
+          },
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              ["]f"] = "@function.outer",
+              ["]a"] = "@parameter.inner",
             },
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<CR>",
-					node_incremental = "<CR>",
-					scope_incremental = "<TAB>",
-					node_decremental = "<S-TAB>",
-				},
-			},
-            additional_vim_regex_highlighting = false,
-        })
+            goto_previous_start = {
+              ["[f"] = "@function.outer",
+              ["[a"] = "@parameter.inner",
+            },
+          },
+          swap = {
+            enable = true,
+            swap_next = {
+              ["<leader>msn"] = "@parameter.inner",
+            },
+            swap_previous = {
+              ["<leader>msp"] = "@parameter.inner",
+            },
+          },
+        },
+        additional_vim_regex_highlighting = false,
+      }
     end,
-},
--- NOTE: js,ts,jsx,tsx Auto Close Tags
-{
+  },
+
+  {
     "windwp/nvim-ts-autotag",
-    enabled = true,
-    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte","python" },
-    config = function()
-        -- Independent nvim-ts-autotag setup
-        require("nvim-ts-autotag").setup({
-            opts = {
-                enable_close = true,           -- Auto-close tags
-                enable_rename = true,          -- Auto-rename pairs
-                enable_close_on_slash = false, -- Disable auto-close on trailing `</`
-            },
-            per_filetype = {
-                ["html"] = {
-                    enable_close = true, -- Disable auto-closing for HTML
-                },
-                ["typescriptreact"] = {
-                    enable_close = true, -- Explicitly enable auto-closing (optional, defaults to `true`)
-                },
-            },
-        })
-    end,
-},
+    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+    opts = {
+      opts = {
+        enable_close = true,
+        enable_rename = true,
+        enable_close_on_slash = false,
+      },
+    },
+  },
 }
