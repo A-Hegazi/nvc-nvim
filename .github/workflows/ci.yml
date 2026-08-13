@@ -57,7 +57,7 @@ jobs:
         run: |
           nvim --headless \
             "+Lazy load mason.nvim mason-nvim-dap.nvim" \
-            "+lua assert(vim.wait(300000, function() return vim.fn.executable(vim.fn.stdpath('data') .. '/mason/bin/codelldb') == 1 end, 200), 'codelldb installation timed out')" \
+            "+lua local package = require('mason-registry').get_package('codelldb'); assert(vim.wait(60000, function() return package:is_installing() end, 100), 'codelldb installation did not start'); assert(vim.wait(300000, function() return package:is_installed() and not package:is_installing() end, 200), 'codelldb installation timed out')" \
             +qa
           test -x "$XDG_DATA_HOME/nvim/mason/bin/codelldb"
       - name: Build Rust smoke project
