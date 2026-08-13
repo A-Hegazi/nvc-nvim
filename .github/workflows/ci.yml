@@ -20,6 +20,7 @@ jobs:
           stylua --check \
             lua/configs/conform.lua \
             lua/plugins/dap.lua \
+            lua/plugins/neotest.lua \
             lua/plugins/noice.lua \
             lua/plugins/rust.lua \
             lua/plugins/treesitter.lua \
@@ -27,7 +28,7 @@ jobs:
 
   neovim-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       XDG_CONFIG_HOME: ${{ github.workspace }}/.ci/config
       XDG_DATA_HOME: ${{ github.workspace }}/.ci/data
@@ -44,13 +45,45 @@ jobs:
           curl -fsSL https://github.com/neovim/neovim/releases/download/v0.11.7/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
           tar -xzf /tmp/nvim.tar.gz -C /tmp
           echo "/tmp/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+      - name: Install Rust components
+        run: rustup component add rust-analyzer rustfmt clippy
       - name: Link configuration
         run: |
           mkdir -p "$XDG_CONFIG_HOME"
           ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
       - name: Install plugins
         run: nvim --headless "+Lazy! sync" +qa
-      - name: Smoke-test startup and Rust plugins
+      - name: Install and verify codelldb
+        run: |
+          nvim --headless \
+            "+Lazy load mason.nvim mason-nvim-dap.nvim" \
+            "+MasonInstall codelldb" \
+            "+lua assert(vim.wait(300000, function() local ok, package = pcall(require('mason-registry').get_package, 'codelldb'); return ok and package:is_installed() end, 200), 'codelldb installation timed out')" \
+            +qa
+          test -x "$XDG_DATA_HOME/nvim/mason/bin/codelldb"
+      - name: Build Rust smoke project
+        run: |
+          cargo new --lib /tmp/nvc-rust-smoke
+          cargo test --manifest-path /tmp/nvc-rust-smoke/Cargo.toml
+      - name: Smoke-test startup and plugin modules
         run: |
           nvim --headless "+lua assert(vim.version().minor == 11)" +qa
-          nvim --headless "+Lazy load rustaceanvim nvim-dap nvim-dap-ui" "+lua assert(require('dap'))" "+lua assert(require('dapui'))" +qa
+          nvim --headless \
+            "+Lazy load rustaceanvim nvim-dap nvim-dap-ui nvim-dap-virtual-text neotest nvim-treesitter-textobjects" \
+            "+lua assert(require('dap'))" \
+            "+lua assert(require('dapui'))" \
+            "+lua assert(require('nvim-dap-virtual-text'))" \
+            "+lua assert(require('neotest'))" \
+            "+lua assert(require('rustowl'))" \
+            +qa
+      - name: Smoke-test a real Rust buffer
+        working-directory: /tmp/nvc-rust-smoke
+        run: |
+          nvim --headless src/lib.rs \
+            "+lua assert(vim.wait(120000, function() return #vim.lsp.get_clients({ name = 'rust-analyzer' }) > 0 end, 200), 'rust-analyzer did not attach')" \
+            "+lua assert(vim.fn.exists(':RustLsp') == 2)" \
+            "+lua assert(vim.fn.exists(':Rustowl') == 2)" \
+            "+lua assert(vim.fn.maparg('<leader>Rt', 'n') ~= '')" \
+            "+lua assert(vim.fn.maparg('<leader>Ro', 'n') ~= '')" \
+            "+lua local select_config = require('nvim-treesitter.configs').get_module('textobjects.select'); assert(select_config and select_config.enable)" \
+            +qa

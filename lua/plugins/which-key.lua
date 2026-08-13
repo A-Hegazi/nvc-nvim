@@ -16,6 +16,7 @@ return {
 
       { "<leader>a", group = "Copilot", icon = "", mode = { "n", "v" } },
       { "<leader>D", group = "Debugger", icon = { icon = "", color = "red" }, mode = "n" },
+      { "<leader>C", group = "Crates", icon = { icon = "", color = "orange" }, mode = { "n", "v" } },
       { "<leader>e", group = "Neo-tree", icon = { icon = "", color = "cyan" }, mode = "n" },
       { "<leader>E", group = "Neo-tree Floating", icon = { icon = "", color = "cyan" }, mode = "n" },
       { "<leader>T", group = "Trouble", mode = "n" },
@@ -27,6 +28,7 @@ return {
       { "<leader>gw", group = "Git worktree", mode = "n" },
       { "<leader>l", group = "LSP", icon = { icon = "", color = "azure" }, mode = "n" },
       { "<leader>m", group = "Mini-Nvim", icon = "", mode = "n" },
+      { "<leader>N", group = "Tests", icon = { icon = "󰙨", color = "green" }, mode = "n" },
       { "<leader>o", group = "Harpoon", icon = "", mode = "n" },
       { "<leader>p", group = "Snacks Picker", icon = "󰈞", mode = "n" },
       { "<leader>pf", group = "Find", mode = "n" },

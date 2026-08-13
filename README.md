@@ -1,6 +1,6 @@
 # NvChad 2.5 – Rust-focused Neovim configuration
 
-This repository is a complete Neovim user configuration built on NvChad 2.5. It includes Rust Analyzer integration, Cargo-aware run/test/debug commands, rustfmt, Cargo checks, crates.nvim, Treesitter, DAP/codelldb, Git tooling, multiple pickers, and multiple file explorers.
+This repository is a complete Neovim user configuration built on NvChad 2.5. It includes Rust Analyzer integration, Cargo-aware run/test/debug commands, rustfmt, Cargo checks, crates.nvim, Neotest, RustOwl ownership visualization, Treesitter textobjects, DAP/codelldb, Git tooling, multiple pickers, and multiple file explorers.
 
 ## Requirements
 
@@ -47,7 +47,7 @@ nvim
 
 NvChad is installed automatically by `init.lua`; do not clone NvChad separately or overlay this repository on another NvChad checkout.
 
-On the first launch, wait for Lazy to install the plugins. Mason will install codelldb for DAP. Other external development tools should be installed through the language's normal toolchain.
+On the first launch, wait for Lazy to install the plugins. Mason will install codelldb for DAP, and Lazy will build RustOwl with Cargo; the first sync can therefore take a few minutes. Other external development tools should be installed through the language's normal toolchain.
 
 ## Rust workflow
 
@@ -57,7 +57,11 @@ Rust Analyzer is managed exclusively by rustaceanvim. Do not also enable `rust_a
 - rustfmt formats Rust files on save through Conform.
 - Clippy is intentionally manual so saving remains responsive.
 - Cargo runnables, tests, macro expansion, code actions, and debuggables are provided by rustaceanvim.
+- Rustaceanvim testables run in the background and report failures as diagnostics.
+- Neotest provides nearest/file/project test runs, output panels, watch mode, and DAP debugging.
 - codelldb is installed through Mason and used through nvim-dap.
+- DAP virtual text shows values inline while debugging.
+- RustOwl ownership and lifetime hints are opt-in with `<leader>Ro`, so its deeper analysis does not run continuously.
 
 ### Rust mappings
 
@@ -74,6 +78,7 @@ Rust Analyzer is managed exclusively by rustaceanvim. Do not also enable `rust_a
 | `<leader>Rd` | Select a debuggable Cargo target |
 | `<leader>Ri` | Toggle inlay hints |
 | `<leader>RI` | Show inlay hints until the next movement |
+| `<leader>Ro` | Toggle RustOwl ownership and lifetime hints |
 
 The `<leader>R` mappings are buffer-local and exist only while editing Rust.
 
@@ -90,6 +95,7 @@ The `<leader>R` mappings are buffer-local and exist only while editing Rust.
 | `<leader>Du` | Toggle the debugger UI |
 | `<leader>Dr` | Open the debugger REPL |
 | `<leader>Dx` | Terminate the session |
+| `<leader>Dv` | Toggle inline debugger values |
 
 Use `<leader>Rd` in a Rust buffer to select a Cargo debug target.
 
@@ -100,12 +106,14 @@ The configuration contains many plugin mappings. Press `<leader>` and use which-
 | Prefix | Group |
 |---|---|
 | `<leader>a` | Copilot |
+| `<leader>C` | Cargo dependencies |
 | `<leader>D` | Debugger |
 | `<leader>e` / `<leader>E` | Neo-tree |
 | `<leader>f` | Telescope |
 | `<leader>g` | Git tools |
 | `<leader>l` | LSP |
 | `<leader>m` | mini.nvim |
+| `<leader>N` | Tests |
 | `<leader>o` | Harpoon |
 | `<leader>p` | Snacks Picker |
 | `<leader>r` | Code Runner |
@@ -143,11 +151,12 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 |---|---|---|
 | Distribution | NvChad 2.5, lazy.nvim | Base configuration and plugin manager |
 | Completion | blink.cmp, LuaSnip, friendly-snippets | Completion, snippets, documentation, and signatures |
-| Rust | rustaceanvim, crates.nvim | Rust Analyzer, Cargo actions, crate versions, and Rust DAP integration |
+| Rust | rustaceanvim, crates.nvim, RustOwl | Rust Analyzer, Cargo actions, crate versions, ownership visualization, and Rust DAP integration |
+| Testing | neotest, nvim-nio, rustaceanvim Neotest adapter | Test discovery, execution, output, watch mode, and DAP debugging |
 | LSP and tools | nvim-lspconfig, Mason, mason-lspconfig | Language servers and external tool installation |
 | Formatting and linting | conform.nvim, nvim-lint | Formatting and diagnostics |
-| Debugging | nvim-dap, nvim-dap-ui, nvim-nio, mason-nvim-dap, codelldb | Debug adapter, UI, and Rust debugger |
-| Syntax | nvim-treesitter, nvim-ts-autotag | Parsing, highlighting, selections, and automatic tag closing |
+| Debugging | nvim-dap, nvim-dap-ui, nvim-dap-virtual-text, nvim-nio, mason-nvim-dap, codelldb | Debug adapter, UI, inline values, and Rust debugger |
+| Syntax | nvim-treesitter, nvim-treesitter-textobjects, nvim-ts-autotag | Parsing, highlighting, structural selection/movement, and automatic tag closing |
 | Pickers | snacks.nvim, telescope.nvim, telescope-fzf-native.nvim, telescope-themes | File, text, symbol, Git, LSP, and theme pickers |
 | File explorers | neo-tree.nvim, snacks.nvim explorer, oil.nvim | Tree views and editable directory buffers |
 | Git | vim-fugitive, gitsigns.nvim, git-worktree.nvim, snacks.nvim Lazygit | Git commands, hunks, worktrees, and Lazygit |
@@ -225,6 +234,12 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 | Treesitter selection | `<Enter>` | Start or increment node selection |
 | Treesitter selection | `<Tab>` | Increment scope selection |
 | Treesitter selection | `<S-Tab>` | Decrement node selection |
+| Treesitter textobject | `af` / `if` | Select outer / inner function |
+| Treesitter textobject | `ac` / `ic` | Select outer / inner class |
+| Treesitter textobject | `aa` / `ia` | Select outer / inner argument |
+| Treesitter textobject | `]f` / `[f` | Go to next / previous function |
+| Treesitter textobject | `]a` / `[a` | Go to next / previous argument |
+| Treesitter textobject | `<leader>msn` / `<leader>msp` | Swap argument with next / previous argument |
 | Normal | `zR` / `zM` | Open/close all folds with UFO |
 | Normal | `za` | Toggle the fold under the cursor |
 | Insert | `<A-d>` / `<A-a>` | Neotab forward/reverse tabout |
@@ -244,6 +259,7 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 | Rust | `<leader>Rd` | Select a debuggable Cargo target |
 | Rust | `<leader>Ri` | Toggle inlay hints |
 | Rust | `<leader>RI` | Show inlay hints until the next movement |
+| Rust | `<leader>Ro` | Toggle RustOwl ownership and lifetime hints |
 | DAP | `<F5>` / `<leader>Dc` | Start or continue |
 | DAP | `<F10>` | Step over |
 | DAP | `<F11>` | Step into |
@@ -253,6 +269,36 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 | DAP | `<leader>Du` | Toggle the debugger UI |
 | DAP | `<leader>Dr` | Open the debugger REPL |
 | DAP | `<leader>Dx` | Terminate the session |
+| DAP | `<leader>Dv` | Toggle inline debugger values |
+
+### Cargo dependencies and tests
+
+The crates.nvim mappings are buffer-local to TOML files handled by crates.nvim. Neotest uses rustaceanvim's built-in Rust adapter; `neotest-rust` is intentionally not installed.
+
+| Context | Mapping | Action |
+|---|---|---|
+| crates.nvim | `<leader>Ct` | Toggle crate virtual text |
+| crates.nvim | `<leader>Cr` | Reload crate data |
+| crates.nvim | `<leader>Cv` | Show available versions |
+| crates.nvim | `<leader>Cf` | Show crate features |
+| crates.nvim | `<leader>Cd` | Show crate dependencies |
+| crates.nvim | `<leader>Cu` | Update crate under cursor; update selected crates in Visual mode |
+| crates.nvim | `<leader>Ca` | Update all crates |
+| crates.nvim | `<leader>CU` | Upgrade crate under cursor; upgrade selected crates in Visual mode |
+| crates.nvim | `<leader>CA` | Upgrade all crates |
+| crates.nvim | `<leader>CH` | Open crate homepage |
+| crates.nvim | `<leader>CR` | Open crate repository |
+| crates.nvim | `<leader>CD` | Open crate documentation |
+| crates.nvim | `<leader>CC` | Open crate on crates.io |
+| Neotest | `<leader>Nn` | Run the nearest test |
+| Neotest | `<leader>Nf` | Run tests in the current file |
+| Neotest | `<leader>Na` | Run all project tests |
+| Neotest | `<leader>Nd` | Debug the nearest test with DAP |
+| Neotest | `<leader>Ns` | Toggle the test summary |
+| Neotest | `<leader>No` | Show nearest test output |
+| Neotest | `<leader>Np` | Toggle the test output panel |
+| Neotest | `<leader>Nw` | Watch the current file |
+| Neotest | `<leader>Nx` | Stop the nearest test run |
 
 ### Telescope, Snacks, and explorers
 
@@ -394,6 +440,7 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 |---|---|
 | `<leader>wK` / `<leader>wk` | Show all keymaps / query a keymap |
 | `<leader>a` | Copilot |
+| `<leader>C` | Cargo dependencies |
 | `<leader>D` | Debugger |
 | `<leader>e` / `<leader>E` | Neo-tree |
 | `<leader>f` | Telescope |
@@ -402,6 +449,7 @@ The overlapping pickers and explorers are intentional. This table lists the conf
 | `<leader>gs` / `<leader>gw` | Gitsigns / Git worktrees |
 | `<leader>l` | LSP |
 | `<leader>m` | mini.nvim |
+| `<leader>N` | Tests |
 | `<leader>o` | Harpoon |
 | `<leader>p` | Snacks Picker |
 | `<leader>pf` / `<leader>pg` | Snacks find / Git pickers |
@@ -439,9 +487,13 @@ For Rust Analyzer logs:
 :RustLsp logFile
 ```
 
+The CI workflow also boots Neovim 0.11.7, installs the locked plugins and codelldb, opens a real Cargo project, waits for rust-analyzer, and verifies the Rust, testing, debugger, RustOwl, and Treesitter integrations. This catches installation and compatibility regressions that a Lua syntax check alone would miss.
+
+If `cargo-nextest` is installed, rustaceanvim and its Neotest adapter will use it automatically. It is optional; regular `cargo test` remains supported.
+
 ## Neovim 0.12 and Treesitter
 
-This configuration deliberately targets Neovim 0.11.7 and pins the legacy `nvim-treesitter` branch used by the current NvChad setup. The maintained Treesitter branch for Neovim 0.12 has a different configuration model and does not support lazy loading.
+This configuration deliberately targets Neovim 0.11.7 and pins the legacy `master` branches of `nvim-treesitter` and `nvim-treesitter-textobjects` used by the current NvChad setup. The maintained Treesitter branch for Neovim 0.12 has a different configuration model and does not support lazy loading.
 
 Upgrade Neovim, NvChad, rustaceanvim, and Treesitter together in a separate migration rather than changing only one component.
 
@@ -463,6 +515,8 @@ Keep `lazy-lock.json` committed so plugin versions remain reproducible.
 - rustfmt unavailable: run `rustup component add rustfmt`.
 - Clippy unavailable: run `rustup component add clippy`.
 - Debugging unavailable: run `:MasonInstall codelldb`, then `:checkhealth rustaceanvim`.
+- Rust tests are not discovered: open Neotest's summary with `<leader>Ns`, confirm rust-analyzer is attached with `:LspInfo`, and check the Cargo workspace from the project root.
+- RustOwl hints are absent: use `<leader>Ro` in a Rust buffer inside a Cargo workspace; the integration is deliberately disabled until toggled.
 - Native Telescope extension failed: install make and a C compiler.
 - Search commands failed: install ripgrep and fd.
 - Slow Rust save: inspect the rust-analyzer log and use `:Lazy profile`; Clippy is not configured to run on save.

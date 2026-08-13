@@ -26,6 +26,14 @@ return {
           end
         end,
       },
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        opts = {
+          commented = true,
+          clear_on_continue = true,
+          only_first_definition = true,
+        },
+      },
     },
     keys = {
       {
@@ -97,6 +105,13 @@ return {
           require("dap").terminate()
         end,
         desc = "Debugger terminate",
+      },
+      {
+        "<leader>Dv",
+        function()
+          require("nvim-dap-virtual-text").toggle()
+        end,
+        desc = "Debugger toggle virtual values",
       },
     },
   },
