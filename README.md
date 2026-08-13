@@ -1,16 +1,16 @@
-# NvChad 2.5 – Rust-focused Neovim configuration
+# NvChad 2.5 – Neovim 0.12 Rust configuration
 
 This repository is a complete Neovim user configuration built on NvChad 2.5. It includes Rust Analyzer integration, Cargo-aware run/test/debug commands, rustfmt, Cargo checks, crates.nvim, Neotest, RustOwl ownership visualization, Treesitter textobjects, DAP/codelldb, Git tooling, multiple pickers, and multiple file explorers.
 
 ## Requirements
 
-- Neovim 0.11.7 or newer within the 0.11 release line
+- Neovim 0.12.4 or newer within the 0.12 release line
 - Git
 - A Nerd Font configured in the terminal
 - Rust installed through rustup
 - ripgrep and fd
 - make and a C compiler (required by native plugins)
-- tree-sitter-cli
+- tree-sitter-cli 0.26.1 or newer
 - lazygit, if the Snacks Lazygit integration is used
 - Node.js 18 or newer, only for GitHub Copilot
 
@@ -21,6 +21,15 @@ rustup component add rust-analyzer rustfmt clippy
 ```
 
 Rustaceanvim recommends using the rust-analyzer that belongs to the active Rust toolchain instead of installing a separate copy through Mason.
+
+Install the RustOwl language server with its official prebuilt installer:
+
+```bash
+curl -L https://raw.githubusercontent.com/cordx56/rustowl/refs/heads/main/scripts/installer | sh
+export PATH="$HOME/.rustowl:$PATH"
+```
+
+Add the `export` line to `~/.zshrc`, `~/.bashrc`, or the equivalent profile for the shell that launches Neovim. The plugin remains available when the binary is missing, but it will not auto-attach and `<leader>Ro` will show an installation warning instead of spawning a broken language-server process.
 
 ## Installation
 
@@ -47,7 +56,7 @@ nvim
 
 NvChad is installed automatically by `init.lua`; do not clone NvChad separately or overlay this repository on another NvChad checkout.
 
-On the first launch, wait for Lazy to install the plugins. Mason will install codelldb for DAP, and Lazy will build RustOwl with Cargo; the first sync can therefore take a few minutes. Other external development tools should be installed through the language's normal toolchain.
+On the first launch, wait for Lazy to install the plugins and Treesitter parsers. Mason will install codelldb for DAP. RustOwl is installed separately with the prebuilt installer above because building it with a normal `cargo install` does not provide its pinned compiler toolchain. Other external development tools should be installed through the language's normal toolchain.
 
 ## Rust workflow
 
@@ -487,15 +496,15 @@ For Rust Analyzer logs:
 :RustLsp logFile
 ```
 
-The CI workflow also boots Neovim 0.11.7, installs the locked plugins and codelldb, opens a real Cargo project, waits for rust-analyzer, and verifies the Rust, testing, debugger, RustOwl, and Treesitter integrations. This catches installation and compatibility regressions that a Lua syntax check alone would miss.
+The CI workflow also boots Neovim 0.12.4, installs the locked plugins, Treesitter parsers, RustOwl, and codelldb, opens a real Cargo project, waits for rust-analyzer, and verifies the Rust, testing, debugger, Mason, Blink, RustOwl, and Treesitter integrations. This catches installation and compatibility regressions that a Lua syntax check alone would miss.
 
 If `cargo-nextest` is installed, rustaceanvim and its Neotest adapter will use it automatically. It is optional; regular `cargo test` remains supported.
 
 ## Neovim 0.12 and Treesitter
 
-This configuration deliberately targets Neovim 0.11.7 and pins the legacy `master` branches of `nvim-treesitter` and `nvim-treesitter-textobjects` used by the current NvChad setup. The maintained Treesitter branch for Neovim 0.12 has a different configuration model and does not support lazy loading.
+This configuration deliberately targets Neovim 0.12.4. `nvim-treesitter` and `nvim-treesitter-textobjects` use their maintained `main` branches, load eagerly as required upstream, and use the new setup/install/highlight/indent APIs. Rustaceanvim uses its Neovim 0.12-compatible v9 line, while blink.cmp is pinned to its compatible v1 line until NvChad adopts Blink's v2 configuration model.
 
-Upgrade Neovim, NvChad, rustaceanvim, and Treesitter together in a separate migration rather than changing only one component.
+Do not switch Treesitter back to the legacy `master` configuration. After updating its plugins, run `:TSUpdate` and restart Neovim so the parser binaries match the runtime.
 
 ## Updating
 
@@ -503,8 +512,11 @@ Inside Neovim:
 
 ```vim
 :Lazy sync
+:TSUpdate
 :MasonUpdate
 ```
+
+Mason's interactive window is `:Mason`. Install a particular package with `:MasonInstall <package>`, for example `:MasonInstall codelldb`. `:MasonInstallAll` is not a Mason command in this configuration; the required codelldb package is managed automatically by mason-nvim-dap.
 
 Keep `lazy-lock.json` committed so plugin versions remain reproducible.
 
@@ -515,8 +527,11 @@ Keep `lazy-lock.json` committed so plugin versions remain reproducible.
 - rustfmt unavailable: run `rustup component add rustfmt`.
 - Clippy unavailable: run `rustup component add clippy`.
 - Debugging unavailable: run `:MasonInstall codelldb`, then `:checkhealth rustaceanvim`.
+- `:Mason` is unknown: run `:Lazy sync`, restart Neovim, and check `:Lazy` for `mason.nvim`; the configured upstream repository is `mason-org/mason.nvim`.
+- Blink reports a Treesitter `range` error: run `:Lazy sync`, `:TSUpdate`, restart Neovim, and confirm `:version` reports Neovim 0.12.4 or newer.
 - Rust tests are not discovered: open Neotest's summary with `<leader>Ns`, confirm rust-analyzer is attached with `:LspInfo`, and check the Cargo workspace from the project root.
 - RustOwl hints are absent: use `<leader>Ro` in a Rust buffer inside a Cargo workspace; the integration is deliberately disabled until toggled.
+- RustOwl cannot spawn: verify `~/.rustowl/rustowl --version`, add `~/.rustowl` to the PATH of the shell that launches Neovim, then fully restart Neovim.
 - Native Telescope extension failed: install make and a C compiler.
 - Search commands failed: install ripgrep and fd.
 - Slow Rust save: inspect the rust-analyzer log and use `:Lazy profile`; Clippy is not configured to run on save.
