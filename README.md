@@ -135,6 +135,284 @@ The overlapping navigation tools are intentional and remain enabled:
 - Neo-tree and Snacks Explorer
 - Oil for directory-buffer editing
 
+## Plugin inventory
+
+The overlapping pickers and explorers are intentional. This table lists the configured plugin stack, including NvChad components that this repository extends or replaces.
+
+| Area | Plugins | Purpose |
+|---|---|---|
+| Distribution | NvChad 2.5, lazy.nvim | Base configuration and plugin manager |
+| Completion | blink.cmp, LuaSnip, friendly-snippets | Completion, snippets, documentation, and signatures |
+| Rust | rustaceanvim, crates.nvim | Rust Analyzer, Cargo actions, crate versions, and Rust DAP integration |
+| LSP and tools | nvim-lspconfig, Mason, mason-lspconfig | Language servers and external tool installation |
+| Formatting and linting | conform.nvim, nvim-lint | Formatting and diagnostics |
+| Debugging | nvim-dap, nvim-dap-ui, nvim-nio, mason-nvim-dap, codelldb | Debug adapter, UI, and Rust debugger |
+| Syntax | nvim-treesitter, nvim-ts-autotag | Parsing, highlighting, selections, and automatic tag closing |
+| Pickers | snacks.nvim, telescope.nvim, telescope-fzf-native.nvim, telescope-themes | File, text, symbol, Git, LSP, and theme pickers |
+| File explorers | neo-tree.nvim, snacks.nvim explorer, oil.nvim | Tree views and editable directory buffers |
+| Git | vim-fugitive, gitsigns.nvim, git-worktree.nvim, snacks.nvim Lazygit | Git commands, hunks, worktrees, and Lazygit |
+| Navigation | harpoon, todo-comments.nvim, trouble.nvim, undotree, vim-maximizer | Marks, TODOs, lists, undo history, and window zoom |
+| Editing | mini.nvim, mini.trailspace, neotab.nvim, nvim-ufo | Surround/split-join, whitespace, tabout, and folding |
+| Running code | code_runner.nvim | File, project, and custom commands |
+| AI | copilot.vim, CopilotChat.nvim | Suggestions and chat |
+| UI | noice.nvim, nvim-notify, which-key.nvim, render-markdown.nvim | Messages, notifications, key discovery, and Markdown rendering |
+| Neo-tree support | nvim-lsp-file-operations, nvim-window-picker | LSP-aware file moves and window selection |
+| Disabled/replaced | nvim-tree.lua, nvim-cmp, indent-blankline.nvim | Replaced by the explorers above, blink.cmp, and Snacks indent guides |
+
+## Complete shortcut reference
+
+`<leader>` is the Space key. The tables below include the mappings declared by this repository plus the important NvChad mappings retained by the configuration. Rust mappings are buffer-local. Some picker and explorer actions intentionally overlap.
+
+### Core editing, buffers, windows, and tabs
+
+| Mode | Mapping | Action |
+|---|---|---|
+| Normal | `;` | Enter command-line mode |
+| Insert | `jk` | Return to normal mode |
+| Normal | `<Esc>` | Clear search highlighting |
+| Normal | `<C-s>` | Save the file |
+| Normal | `<C-c>` | Copy the whole file |
+| Normal | `<C-h>` / `<C-j>` / `<C-k>` / `<C-l>` | Move between windows |
+| Normal | `<C-Up>` / `<C-Down>` | Resize the window vertically |
+| Normal | `<C-Left>` / `<C-Right>` | Resize the window horizontally |
+| Insert | `<C-b>` / `<C-e>` | Move to beginning/end of line |
+| Insert | `<C-h>` / `<C-j>` / `<C-k>` / `<C-l>` | Move left/down/up/right |
+| Normal | `J` | Join lines while preserving cursor position |
+| Visual | `<A-j>` / `<A-k>` | Move the selection down/up |
+| Visual | `<` / `>` | Indent left/right and keep the selection |
+| Visual | `<leader>l` / `<leader>P` | Paste without replacing the clipboard |
+| Normal/Visual | `<leader>d` | Delete without replacing the clipboard |
+| Normal | `<leader>W` | Replace the word under the cursor globally |
+| Normal | `n` / `N` | Next/previous search result, centered |
+| Normal | `<C-d>` / `<C-u>` | Half-page down/up, centered |
+| Normal | `<leader>se` | Make split windows equal size |
+| Normal | `<leader>+` | Maximize or restore the current window |
+| Normal | `<leader>n` | Toggle absolute line numbers |
+| Normal | `<leader>.` | Toggle relative line numbers |
+| Normal | `<leader>b` | Create a new buffer |
+| Normal | `<leader>x` | Close the current buffer |
+| Normal | `<Tab>` / `<S-Tab>` | Next/previous buffer |
+| Normal | `<leader>to` | Open a new tab |
+| Normal | `<leader>tx` | Close the current tab |
+| Normal | `<leader>tn` / `<leader>tp` | Next/previous tab |
+| Normal | `<leader>tf` | Open the current buffer in a new tab |
+| Normal | `<leader>h` / `<leader>v` | Open a horizontal/vertical terminal |
+| Terminal | `<A-h>` / `<A-v>` / `<A-i>` | Toggle horizontal/vertical/floating terminal |
+| Terminal | `<C-x>` | Leave terminal mode |
+| Normal | `<leader>i` | Copy the current file path |
+| Normal/Visual | `<leader>/` | Toggle comment |
+| Normal | `<leader>c` | Open the NvChad cheatsheet |
+| Normal | `<leader>u` | Toggle Undotree |
+
+### LSP, diagnostics, formatting, completion, and syntax
+
+| Context | Mapping | Action |
+|---|---|---|
+| LSP | `K` | Show hover documentation |
+| LSP | `<leader>la` | Add a workspace folder |
+| LSP | `<leader>lo` | Remove a workspace folder |
+| LSP | `<leader>ll` | List workspace folders |
+| LSP | `<leader>lt` | Go to type definition |
+| LSP | `<leader>lr` | Rename symbol |
+| LSP | `gD` / `gd` | Go to declaration / definition |
+| Normal | `gl` | Show diagnostic under the cursor |
+| Normal | `<leader>ld` | Toggle diagnostic virtual text and underlines |
+| Normal | `<leader>ls` | Send diagnostics to the location list |
+| Normal/Visual | `<leader>z` | Format through Conform |
+| Insert | `<C-d>` / `<C-u>` | Scroll completion documentation down/up |
+| Insert | `<C-k>` / `<C-j>` | Show/hide completion documentation |
+| Insert | `<C-s>` / `<C-h>` | Show/hide signature help |
+| Treesitter selection | `<Enter>` | Start or increment node selection |
+| Treesitter selection | `<Tab>` | Increment scope selection |
+| Treesitter selection | `<S-Tab>` | Decrement node selection |
+| Normal | `zR` / `zM` | Open/close all folds with UFO |
+| Normal | `za` | Toggle the fold under the cursor |
+| Insert | `<A-d>` / `<A-a>` | Neotab forward/reverse tabout |
+
+### Rust and debugging
+
+| Context | Mapping | Action |
+|---|---|---|
+| Rust | `<leader>Ra` | Rust grouped code action |
+| Rust | `<leader>Rh` | Rust hover actions |
+| Rust | `<leader>Rr` | Select a Cargo runnable |
+| Rust | `<leader>Rt` | Select Rust tests |
+| Rust | `<leader>Re` | Expand the macro under the cursor |
+| Rust | `<leader>Rp` | Open the parent module |
+| Rust | `<leader>Rf` | Run rust-analyzer's check now |
+| Rust | `<leader>Rc` | Run `cargo clippy --all-targets` in a terminal |
+| Rust | `<leader>Rd` | Select a debuggable Cargo target |
+| Rust | `<leader>Ri` | Toggle inlay hints |
+| Rust | `<leader>RI` | Show inlay hints until the next movement |
+| DAP | `<F5>` / `<leader>Dc` | Start or continue |
+| DAP | `<F10>` | Step over |
+| DAP | `<F11>` | Step into |
+| DAP | `<F12>` | Step out |
+| DAP | `<leader>Db` | Toggle breakpoint |
+| DAP | `<leader>DB` | Set a conditional breakpoint |
+| DAP | `<leader>Du` | Toggle the debugger UI |
+| DAP | `<leader>Dr` | Open the debugger REPL |
+| DAP | `<leader>Dx` | Terminate the session |
+
+### Telescope, Snacks, and explorers
+
+| Plugin | Mapping | Action |
+|---|---|---|
+| Telescope | `<leader>fw` | Live grep |
+| Telescope | `<leader>fW` | Grep the word under the cursor |
+| Telescope | `<leader>fb` | Find buffers |
+| Telescope | `<leader>fh` | Help tags |
+| Telescope | `<leader>fo` | Old files |
+| Telescope | `<leader>fz` | Find in current buffer |
+| Telescope | `<leader>ff` | Find files |
+| Telescope | `<leader>fa` | Find all files, including hidden files |
+| Telescope | `<leader>fm` | Marks |
+| Telescope | `<leader>fc` | Git commits |
+| Telescope | `<leader>fg` | Git status |
+| Telescope | `<leader>fr` | Hidden terminals |
+| Telescope | `<leader>ft` | Themes |
+| Telescope window | `<C-k>` / `<C-j>` | Move to the previous/next result |
+| Snacks | `<leader>p<Space>` | Smart file picker |
+| Snacks | `<leader>pn` | Notification history |
+| Snacks files | `<leader>pfb` / `<leader>pfc` | Buffers / config files |
+| Snacks files | `<leader>pff` / `<leader>pfg` | Files / Git files |
+| Snacks files | `<leader>pfp` / `<leader>pfr` | Projects / recent files |
+| Snacks Git | `<leader>pgb` / `<leader>pgl` / `<leader>pgL` | Git branches / log / log line |
+| Snacks Git | `<leader>pgs` / `<leader>pgS` | Git status / stash |
+| Snacks Git | `<leader>pgd` / `<leader>pgf` | Git diff / log for current file |
+| Snacks grep | `<leader>prg` / `<leader>prb` / `<leader>prw` | Grep / grep buffers / grep word |
+| Snacks search | `<leader>psr` / `<leader>psi` | Registers / search history |
+| Snacks search | `<leader>psa` / `<leader>psb` | Autocommands / buffer lines |
+| Snacks search | `<leader>psc` / `<leader>psC` | Command history / commands |
+| Snacks search | `<leader>psd` / `<leader>psD` | Diagnostics / buffer diagnostics |
+| Snacks search | `<leader>psh` / `<leader>psH` | Help / highlights |
+| Snacks search | `<leader>psI` | Icons |
+| Snacks search | `<leader>psj` / `<leader>psk` | Jumps / keymaps |
+| Snacks search | `<leader>psl` / `<leader>psm` | Location list / marks |
+| Snacks search | `<leader>psM` / `<leader>psp` | Man pages / plugin specs |
+| Snacks search | `<leader>psq` / `<leader>psR` | Quickfix / resume last picker |
+| Snacks search | `<leader>psu` / `<leader>psS` | Undo history / colorschemes |
+| Snacks LSP | `<leader>pld` / `<leader>plD` | Definitions / declarations |
+| Snacks LSP | `<leader>plr` / `<leader>pli` | References / implementations |
+| Snacks LSP | `<leader>plt` / `<leader>pls` | Type definitions / document symbols |
+| Snacks LSP | `<leader>plS` | Workspace symbols |
+| Snacks TODO | `<leader>pst` / `<leader>psT` | TODOs / TODO and FIXME items |
+| Snacks | `<leader>sf` | Toggle Snacks Explorer |
+| Snacks | `<leader>sr` | Rename the current file |
+| Snacks | `<leader>sd` | Delete the current buffer |
+| Neo-tree | `<leader>ef` / `<leader>eg` / `<leader>eb` | Filesystem / Git / buffers |
+| Neo-tree | `<leader>Ef` / `<leader>Eg` / `<leader>Eb` | Floating filesystem / Git / buffers |
+| Snacks input | `<C-c>` | Cancel a Snacks input prompt |
+| Neo-tree | `<leader>es` | Toggle document symbols |
+| Neo-tree window | `<Tab>` | Toggle the selected node |
+| Oil | `-` | Open the parent directory |
+| Oil | `<leader>-` | Open Oil in a floating window |
+| Oil window | `<M-h>` | Open the selected entry in a split |
+| Oil window | `q` | Close Oil |
+
+### Git and worktrees
+
+| Plugin | Mapping | Action |
+|---|---|---|
+| Fugitive | `<leader>gfg` | Git status |
+| Fugitive | `<leader>gfb` | Git blame |
+| Fugitive | `<leader>gfl` | Git log |
+| Fugitive | `<leader>gfd` | Git diff |
+| Fugitive | `<leader>gfs` | Open a vertical Git diff |
+| Fugitive | `<leader>gfa` | Git add current file |
+| Fugitive | `<leader>gfc` | Git commit |
+| Fugitive | `<leader>gfp` / `<leader>gfP` | Git push / pull |
+| Fugitive | `<leader>gfo` / `<leader>gfB` | Git browse/open mappings are configured but disabled |
+| Gitsigns | `<leader>gss` / `<leader>gsu` | Stage / undo-stage hunk |
+| Gitsigns | `<leader>gsr` / `<leader>gsR` | Reset hunk / reset buffer |
+| Gitsigns | `<leader>gsp` | Preview hunk |
+| Gitsigns | `<leader>gsb` | Blame line |
+| Gitsigns | `<leader>gsd` / `<leader>gsD` | Diff against index / previous revision |
+| Gitsigns | `<leader>gsn` / `<leader>gsP` | Next / previous hunk |
+| Worktree | `<leader>gwc` | Create a worktree |
+| Worktree | `<leader>gws` | Switch worktrees |
+| Worktree | `<leader>gwd` | Delete a worktree |
+| Snacks Lazygit | `<leader>gll` / `<leader>glg` | Open Lazygit / Lazygit log |
+
+### Code Runner, Harpoon, mini.nvim, TODO, and Trouble
+
+| Plugin | Mapping | Action |
+|---|---|---|
+| Code Runner | `<leader>rr` | Run code |
+| Code Runner | `<leader>rf` | Run the filetype command |
+| Code Runner | `<leader>rp` | Run the project command |
+| Code Runner | `<leader>rt` / `<leader>rl` | Run in a tab / floating window |
+| Code Runner | `<leader>rs` / `<leader>rv` | Run in a horizontal / vertical split |
+| Code Runner | `<leader>rc` | Close Code Runner |
+| Code Runner | `<leader>rF` / `<leader>rP` | Show filetype / project command |
+| Code Runner | `<leader>rR` | Run a custom command |
+| Harpoon | `<leader>oa` | Add the current file |
+| Harpoon | `<leader>ot` | Toggle the Harpoon menu |
+| Harpoon | `<leader>o1` ... `<leader>o4` | Select Harpoon item 1 ... 4 |
+| Harpoon | `<leader>op` / `<leader>on` | Previous / next Harpoon item |
+| mini.trailspace | `<leader>mh` / `<leader>mu` | Highlight / unhighlight trailing spaces |
+| mini.trailspace | `<leader>mt` / `<leader>mr` | Trim trailing spaces / remove final blank lines |
+| mini.splitjoin | `<leader>ms` / `<leader>mj` | Split / join arguments |
+| mini.surround | `sa` / `sd` | Add / delete surrounding |
+| mini.surround | `sf` / `sF` | Find surrounding right / left |
+| mini.surround | `sh` / `sr` / `sn` | Highlight / replace / update surrounding count |
+| TODO comments | `]t` / `[t` | Next / previous TODO comment |
+| Trouble | `<leader>Tq` | Quickfix list |
+| Trouble | `<leader>Tt` | TODO list |
+| Trouble | `<leader>Tx` / `<leader>TX` | Diagnostics / buffer diagnostics |
+| Trouble | `<leader>TS` | Symbols |
+| Trouble | `<leader>Tl` / `<leader>TL` | LSP definitions/references / location list |
+| Trouble | `<leader>TQ` | Quickfix list |
+
+### Copilot and CopilotChat
+
+| Mode | Mapping | Action |
+|---|---|---|
+| Normal | `<leader>aa` | Toggle Copilot panel |
+| Normal | `<leader>al` | Copilot login |
+| Normal | `<leader>as` | Copilot status |
+| Normal | `<leader>aS` | Stop Copilot |
+| Normal | `<leader>ae` / `<leader>ad` | Enable / disable Copilot |
+| Insert | `<C-l>` | Accept suggestion |
+| Insert | `<A-]>` / `<A-[>` | Next / previous suggestion |
+| Insert | `<C-\>` | Dismiss suggestion |
+| Normal | `<leader>ac` | Toggle CopilotChat |
+| Normal/Visual | `<leader>aq` | Open CopilotChat prompts |
+| Normal/Visual | `<leader>ax` | Explain code |
+| Normal/Visual | `<leader>ar` | Review code |
+| Normal/Visual | `<leader>af` | Fix issues |
+| Normal/Visual | `<leader>ao` | Optimize code |
+| Normal/Visual | `<leader>at` | Generate tests |
+| Normal | `<leader>ag` | Generate a commit message for staged changes |
+| Normal | `<leader>aR` | Reset the chat session |
+| Normal | `<leader>az` | Stop the current response |
+| Normal | `<leader>am` | Choose a Copilot model |
+
+### Which-key groups
+
+| Mapping | Group |
+|---|---|
+| `<leader>wK` / `<leader>wk` | Show all keymaps / query a keymap |
+| `<leader>a` | Copilot |
+| `<leader>D` | Debugger |
+| `<leader>e` / `<leader>E` | Neo-tree |
+| `<leader>f` | Telescope |
+| `<leader>g` | Git |
+| `<leader>gf` / `<leader>gl` | Fugitive / Lazygit |
+| `<leader>gs` / `<leader>gw` | Gitsigns / Git worktrees |
+| `<leader>l` | LSP |
+| `<leader>m` | mini.nvim |
+| `<leader>o` | Harpoon |
+| `<leader>p` | Snacks Picker |
+| `<leader>pf` / `<leader>pg` | Snacks find / Git pickers |
+| `<leader>pl` / `<leader>pr` / `<leader>ps` | Snacks LSP / grep / search pickers |
+| `<leader>r` | Code Runner |
+| `<leader>R` | Rust in Rust buffers |
+| `<leader>s` | Snacks |
+| `<leader>sl` | Snacks Lazygit |
+| `<leader>T` | Trouble |
+| `<leader>t` | Tabs |
+
 ## Formatting and diagnostics
 
 - Rust: rustfmt plus rust-analyzer `cargo check`
