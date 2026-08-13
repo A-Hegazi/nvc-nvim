@@ -100,7 +100,7 @@ map("n", "gl", vim.diagnostic.open_float, { desc = "Show floating diagnostic" })
 
 -- Change format file to leader + z
 map({ "n", "x" }, "<leader>z", function()
-    require("conform").format { lsp_fallback = true }
+    require("conform").format { lsp_format = "fallback" }
 end, { desc = "general format file" })
 
 -- Change sheetche keymap to <leader>c

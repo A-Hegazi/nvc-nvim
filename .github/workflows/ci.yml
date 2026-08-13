@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lua-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Stylua
+        run: cargo install stylua --locked
+      - name: Check Lua formatting
+        run: stylua --check .
+
+  neovim-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XDG_CONFIG_HOME: ${{ github.workspace }}/.ci/config
+      XDG_DATA_HOME: ${{ github.workspace }}/.ci/data
+      XDG_STATE_HOME: ${{ github.workspace }}/.ci/state
+      XDG_CACHE_HOME: ${{ github.workspace }}/.ci/cache
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential fd-find ripgrep
+      - name: Install Neovim 0.11.7
+        run: |
+          curl -fsSL https://github.com/neovim/neovim/releases/download/v0.11.7/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
+          tar -xzf /tmp/nvim.tar.gz -C /tmp
+          echo "/tmp/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+      - name: Link configuration
+        run: |
+          mkdir -p "$XDG_CONFIG_HOME"
+          ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
+      - name: Install plugins
+        run: nvim --headless "+Lazy! sync" +qa
+      - name: Smoke-test startup and Rust plugins
+        run: |
+          nvim --headless "+lua assert(vim.version().minor == 11)" +qa
+          nvim --headless "+Lazy load rustaceanvim nvim-dap nvim-dap-ui" "+lua assert(require('dap'))" "+lua assert(require('dapui'))" +qa

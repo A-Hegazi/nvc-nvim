@@ -2,51 +2,44 @@ return {
   "folke/which-key.nvim",
   opts = function()
     dofile(vim.g.base46_cache .. "whichkey")
-    return {
-      -- optional: keep which-key’s own icons for mappings/groups
-      -- icons = { mappings = true },
-    }
+    return {}
   end,
   config = function(_, opts)
-    local wk = require("which-key")
+    local wk = require "which-key"
     wk.setup(opts)
 
-    -- ✅ Add icons to existing mappings
-    wk.add({
-      -- Keys mapping icons
-      { "<leader>u",  desc = "Undo Tree", icon = { icon = "", color = "red" }, mode = "n" },
-      { "<leader>x",  desc = "Buffer Close", icon = { icon = "󰅗", color = "red" }, mode = "n" },
-      { "<leader>W",  desc = "Replace word under cursor globally", icon = { icon = "", color = "red" }, mode = "n" },
-      { "<leader>d",  desc = "Delete without yanking", icon = { icon = "", color = "red" }, mode = "n" },
+    wk.add {
+      { "<leader>u", desc = "Undo Tree", icon = { icon = "", color = "red" }, mode = "n" },
+      { "<leader>x", desc = "Buffer Close", icon = { icon = "󰅗", color = "red" }, mode = "n" },
+      { "<leader>W", desc = "Replace word under cursor globally", icon = { icon = "", color = "red" }, mode = "n" },
+      { "<leader>d", desc = "Delete without yanking", icon = { icon = "", color = "red" }, mode = "n" },
 
-      -- Group icons (applies to the group line)
-    { "<leader>e", group = "Neo-tree", mode = "n", icon = { icon = "", color = "cyan" } },
-    { "<leader>E", group = "Neo-tree Floating", mode = "n", icon = { icon = "", color = "cyan" } },
-    { "<leader>T", group = "Trouble", mode = "n" },
-    { "<leader>f", group = "Telescope & Find", mode = "n" },
-    { "<leader>m", group = "Mini-Nvim", mode = "n",icon = "" },
-    { "<leader>o", group = "Harpoon", mode = "n",icon = ""},
-    { "<leader>s", group = "Snacks", mode = "n",icon = ""},
-    { "<leader>sl", group = "Snacks Lazygit", mode = "n" },
-    { "<leader>r", group = "Run Code", mode = "n",icon = "" },
-    { "<leader>t", group = "Tabs stuff", mode = "n" },
-    { "<leader>p", group = "Snacks Picker", mode = "n",icon ="󰈞" },
-    { "<leader>pf", group = "Find", mode = "n" },
-    { "<leader>pg", group = "Git", mode = "n" },
-    { "<leader>ps", group = "Search", mode = "n" },
-    { "<leader>pl", group = "LSP", mode = "n" },
-    { "<leader>pr", group = "Grep", mode = "n" },
-    { "<leader>w", group = "Which Key", mode = "n" },
-    { "<leader>g", group = "git plugins", mode = "n" },
-    { "<leader>gl", group = "Lazy Git", mode = "n" },
-    { "<leader>gf", group = "fugitive", mode = "n" },
-    { "<leader>gs", group = "Git signs", mode = "n" },
-    { "<leader>gw", group = "Git worktree", mode = "n" },
-    { "<leader>l", group = "LSP", mode = "n",icon = { icon = "", color = "azure" } },
-    { "<leader>a", group = "Copilot", mode = "n","v"},
-    })
-
+      { "<leader>a", group = "Copilot", icon = "", mode = { "n", "v" } },
+      { "<leader>D", group = "Debugger", icon = { icon = "", color = "red" }, mode = "n" },
+      { "<leader>e", group = "Neo-tree", icon = { icon = "", color = "cyan" }, mode = "n" },
+      { "<leader>E", group = "Neo-tree Floating", icon = { icon = "", color = "cyan" }, mode = "n" },
+      { "<leader>T", group = "Trouble", mode = "n" },
+      { "<leader>f", group = "Telescope & Find", mode = "n" },
+      { "<leader>g", group = "Git plugins", mode = "n" },
+      { "<leader>gf", group = "Fugitive", mode = "n" },
+      { "<leader>gl", group = "Lazygit", mode = "n" },
+      { "<leader>gs", group = "Git signs", mode = "n" },
+      { "<leader>gw", group = "Git worktree", mode = "n" },
+      { "<leader>l", group = "LSP", icon = { icon = "", color = "azure" }, mode = "n" },
+      { "<leader>m", group = "Mini-Nvim", icon = "", mode = "n" },
+      { "<leader>o", group = "Harpoon", icon = "", mode = "n" },
+      { "<leader>p", group = "Snacks Picker", icon = "󰈞", mode = "n" },
+      { "<leader>pf", group = "Find", mode = "n" },
+      { "<leader>pg", group = "Git", mode = "n" },
+      { "<leader>pl", group = "LSP", mode = "n" },
+      { "<leader>pr", group = "Grep", mode = "n" },
+      { "<leader>ps", group = "Search", mode = "n" },
+      { "<leader>r", group = "Run Code", icon = "", mode = "n" },
+      { "<leader>R", group = "Rust", icon = { icon = "", color = "orange" }, mode = "n" },
+      { "<leader>s", group = "Snacks", icon = "", mode = "n" },
+      { "<leader>sl", group = "Snacks Lazygit", mode = "n" },
+      { "<leader>t", group = "Tabs", mode = "n" },
+      { "<leader>w", group = "Which Key", mode = "n" },
+    }
   end,
 }
-
---icon colors: azure, blue, cyan, green, grey, orange, purple, red, yellow

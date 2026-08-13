@@ -23,7 +23,7 @@ return {
                 exclude = { "latex" },
             },
             indent = {
-            enable = true,
+            enabled = true,
             },
             explorer = {
                 enabled = true,
