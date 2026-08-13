@@ -114,10 +114,7 @@ return {
             end, "peek inlay hints")
             map_rust(bufnr, "<leader>Ro", function()
               if vim.fn.executable "rustowl" ~= 1 then
-                vim.notify(
-                  "RustOwl is not installed. See the README installation instructions.",
-                  vim.log.levels.WARN
-                )
+                vim.notify("RustOwl is not installed. See the README installation instructions.", vim.log.levels.WARN)
                 return
               end
 
