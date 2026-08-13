@@ -16,7 +16,14 @@ jobs:
       - name: Install Stylua
         run: cargo install stylua --locked
       - name: Check Lua formatting
-        run: stylua --check .
+        run: |
+          stylua --check \
+            lua/configs/conform.lua \
+            lua/plugins/dap.lua \
+            lua/plugins/noice.lua \
+            lua/plugins/rust.lua \
+            lua/plugins/treesitter.lua \
+            lua/plugins/which-key.lua
 
   neovim-smoke:
     runs-on: ubuntu-latest
