@@ -59,12 +59,13 @@ end
 return {
   {
     "mrcjkb/rustaceanvim",
-    version = "^6",
-    ft = { "rust" },
+    version = "^9",
+    lazy = false,
     dependencies = { "mfussenegger/nvim-dap" },
     init = function()
       vim.g.rustaceanvim = {
         tools = {
+          enable_clippy = false,
           test_executor = "background",
         },
         server = {
@@ -112,6 +113,11 @@ return {
               peek_inlay_hints(bufnr)
             end, "peek inlay hints")
             map_rust(bufnr, "<leader>Ro", function()
+              if vim.fn.executable "rustowl" ~= 1 then
+                vim.notify("RustOwl is not installed. See the README installation instructions.", vim.log.levels.WARN)
+                return
+              end
+
               require("rustowl").toggle(bufnr)
             end, "toggle RustOwl ownership hints")
           end,
@@ -176,12 +182,13 @@ return {
   {
     "cordx56/rustowl",
     version = "^0.4",
-    build = "cargo install rustowl",
     lazy = false,
-    opts = {
-      auto_attach = true,
-      auto_enable = false,
-      idle_time = 500,
-    },
+    opts = function()
+      return {
+        auto_attach = vim.fn.executable "rustowl" == 1,
+        auto_enable = false,
+        idle_time = 500,
+      }
+    end,
   },
 }

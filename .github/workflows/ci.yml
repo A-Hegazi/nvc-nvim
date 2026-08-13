@@ -19,7 +19,9 @@ jobs:
         run: |
           stylua --check \
             lua/configs/conform.lua \
+            lua/plugins/blink.lua \
             lua/plugins/dap.lua \
+            lua/plugins/mason.lua \
             lua/plugins/neotest.lua \
             lua/plugins/noice.lua \
             lua/plugins/rust.lua \
@@ -28,7 +30,7 @@ jobs:
 
   neovim-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     env:
       XDG_CONFIG_HOME: ${{ github.workspace }}/.ci/config
       XDG_DATA_HOME: ${{ github.workspace }}/.ci/data
@@ -40,19 +42,31 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential fd-find ripgrep
-      - name: Install Neovim 0.11.7
+      - name: Install Neovim 0.12.4
         run: |
-          curl -fsSL https://github.com/neovim/neovim/releases/download/v0.11.7/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
+          curl -fsSL https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
           tar -xzf /tmp/nvim.tar.gz -C /tmp
           echo "/tmp/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
       - name: Install Rust components
         run: rustup component add rust-analyzer rustfmt clippy
+      - name: Install tree-sitter CLI
+        run: cargo install tree-sitter-cli --git https://github.com/tree-sitter/tree-sitter --tag v0.26.1 --locked
+      - name: Install RustOwl
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/cordx56/rustowl/refs/heads/main/scripts/installer | sh
+          test -x "$HOME/.rustowl/rustowl"
+          echo "$HOME/.rustowl" >> "$GITHUB_PATH"
       - name: Link configuration
         run: |
           mkdir -p "$XDG_CONFIG_HOME"
           ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
       - name: Install plugins
         run: nvim --headless "+Lazy! sync" +qa
+      - name: Install Treesitter parsers
+        run: |
+          nvim --headless \
+            "+lua require('nvim-treesitter').install({ 'lua', 'markdown', 'markdown_inline', 'rust', 'vim', 'vimdoc' }):wait(300000)" \
+            +qa
       - name: Install and verify codelldb
         run: |
           nvim --headless \
@@ -66,14 +80,10 @@ jobs:
           cargo test --manifest-path /tmp/nvc-rust-smoke/Cargo.toml
       - name: Smoke-test startup and plugin modules
         run: |
-          nvim --headless "+lua assert(vim.version().minor == 11)" +qa
+          nvim --headless "+lua local version = vim.version(); assert(version.major == 0 and version.minor == 12 and version.patch >= 4)" +qa
           nvim --headless \
-            "+Lazy load rustaceanvim nvim-dap nvim-dap-ui nvim-dap-virtual-text neotest nvim-treesitter-textobjects" \
-            "+lua assert(require('dap'))" \
-            "+lua assert(require('dapui'))" \
-            "+lua assert(require('nvim-dap-virtual-text'))" \
-            "+lua assert(require('neotest'))" \
-            "+lua assert(require('rustowl'))" \
+            "+Lazy load nvim-dap nvim-dap-ui nvim-dap-virtual-text neotest" \
+            "+lua for _, module in ipairs({ 'dap', 'dapui', 'nvim-dap-virtual-text', 'neotest', 'nvim-treesitter', 'nvim-treesitter-textobjects', 'blink.cmp', 'rustowl' }) do assert(require(module), module .. ' failed to load') end; assert(vim.fn.exists(':Mason') == 2); assert(vim.fn.exists(':MasonInstall') == 2)" \
             +qa
       - name: Smoke-test a real Rust buffer
         working-directory: /tmp/nvc-rust-smoke
@@ -84,5 +94,7 @@ jobs:
             "+lua assert(vim.fn.exists(':Rustowl') == 2)" \
             "+lua assert(vim.fn.maparg('<leader>Rt', 'n') ~= '')" \
             "+lua assert(vim.fn.maparg('<leader>Ro', 'n') ~= '')" \
-            "+lua local select_config = require('nvim-treesitter.configs').get_module('textobjects.select'); assert(select_config and select_config.enable)" \
+            "+lua assert(vim.fn.maparg('af', 'x') ~= '')" \
+            "+lua assert(vim.treesitter.get_parser(0, 'rust'))" \
+            "+lua assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()])" \
             +qa
