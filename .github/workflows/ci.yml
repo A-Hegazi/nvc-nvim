@@ -83,16 +83,7 @@ jobs:
           nvim --headless "+lua local version = vim.version(); assert(version.major == 0 and version.minor == 12 and version.patch >= 4)" +qa
           nvim --headless \
             "+Lazy load nvim-dap nvim-dap-ui nvim-dap-virtual-text neotest" \
-            "+lua assert(require('dap'))" \
-            "+lua assert(require('dapui'))" \
-            "+lua assert(require('nvim-dap-virtual-text'))" \
-            "+lua assert(require('neotest'))" \
-            "+lua assert(require('nvim-treesitter'))" \
-            "+lua assert(require('nvim-treesitter-textobjects'))" \
-            "+lua assert(require('blink.cmp'))" \
-            "+lua assert(require('rustowl'))" \
-            "+lua assert(vim.fn.exists(':Mason') == 2)" \
-            "+lua assert(vim.fn.exists(':MasonInstall') == 2)" \
+            "+lua for _, module in ipairs({ 'dap', 'dapui', 'nvim-dap-virtual-text', 'neotest', 'nvim-treesitter', 'nvim-treesitter-textobjects', 'blink.cmp', 'rustowl' }) do assert(require(module), module .. ' failed to load') end; assert(vim.fn.exists(':Mason') == 2); assert(vim.fn.exists(':MasonInstall') == 2)" \
             +qa
       - name: Smoke-test a real Rust buffer
         working-directory: /tmp/nvc-rust-smoke
