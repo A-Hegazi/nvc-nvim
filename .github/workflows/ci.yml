@@ -50,7 +50,7 @@ jobs:
       - name: Install Rust components
         run: rustup component add rust-analyzer rustfmt clippy
       - name: Install tree-sitter CLI
-        run: cargo install tree-sitter-cli --version 0.26.1 --locked
+        run: cargo install tree-sitter-cli --git https://github.com/tree-sitter/tree-sitter --tag v0.26.1 --locked
       - name: Install RustOwl
         run: |
           curl -fsSL https://raw.githubusercontent.com/cordx56/rustowl/refs/heads/main/scripts/installer | sh
