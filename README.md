@@ -520,6 +520,343 @@ Mason's interactive window is `:Mason`. Install a particular package with `:Maso
 
 Keep `lazy-lock.json` committed so plugin versions remain reproducible.
 
+## Complete Ubuntu / WSL setup
+
+This section contains everything needed when installing this configuration on a new Ubuntu or WSL system.
+
+### 1. Install system packages
+
+Enable Ubuntu's additional package repository:
+
+```bash
+sudo apt update
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y multiverse
+sudo apt update
+```
+
+Install the core command-line tools, build dependencies, archive utilities, search tools, and clipboard providers:
+
+```bash
+sudo apt install -y \
+  git \
+  curl \
+  wget \
+  unzip \
+  zip \
+  p7zip-full \
+  rar \
+  unrar \
+  tar \
+  gzip \
+  zsh \
+  fzf \
+  ripgrep \
+  fd-find \
+  build-essential \
+  cmake \
+  ninja-build \
+  pkg-config \
+  clang \
+  libclang-dev \
+  llvm-dev \
+  python3 \
+  python3-pip \
+  python3-venv \
+  nodejs \
+  npm \
+  sqlite3 \
+  xclip \
+  wl-clipboard
+```
+
+These packages provide:
+
+| Package | Used for |
+|---|---|
+| `git`, `curl`, `wget` | Downloading plugins and external tools |
+| `unzip`, `zip`, `p7zip-full`, `rar`, `unrar` | Extracting archives downloaded by plugins and Mason |
+| `zsh` | Configured terminal shell |
+| `fzf` | Fuzzy searching from the terminal |
+| `ripgrep` | Telescope and Snacks text searching |
+| `fd-find` | Fast file searching |
+| `build-essential`, `cmake`, `ninja-build` | Compiling native Neovim plugins |
+| `clang`, `libclang-dev`, `llvm-dev` | Building tree-sitter-cli and Bindgen-based Rust packages |
+| `python3`, `pip`, `venv` | Python-based Neovim tools |
+| `nodejs`, `npm` | GitHub Copilot and Node-based tools |
+| `sqlite3` | Better Snacks Picker history and frecency storage |
+| `xclip`, `wl-clipboard` | Linux system clipboard integration |
+
+Ubuntu installs `fd-find` as `fdfind`. Create an `fd` command for plugins that expect that name:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
+```
+
+Ensure the local binary directory is in PATH:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+```
+
+### 2. Configure Zsh
+
+Make Zsh the default shell:
+
+```bash
+chsh -s "$(command -v zsh)"
+```
+
+Log out and sign in again after running `chsh`, or start it immediately with:
+
+```bash
+exec zsh
+```
+
+This configuration expects Zsh to exist, but Oh My Zsh is not required.
+
+### 3. Install Neovim
+
+Do not install Neovim from Ubuntu's standard `apt` repository because it may provide an older version.
+
+Install the current Snap build:
+
+```bash
+sudo snap install nvim --classic
+```
+
+If it is already installed:
+
+```bash
+sudo snap refresh nvim
+```
+
+Verify that Neovim 0.12.4 or newer is installed:
+
+```bash
+nvim --version
+```
+
+The first line must report Neovim `0.12.4` or a newer compatible `0.12.x` version.
+
+### 4. Install Rust
+
+Install Rust through rustup:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+```
+
+Install the components used by this configuration:
+
+```bash
+rustup component add rust-analyzer rustfmt clippy
+```
+
+Verify the installation:
+
+```bash
+rustc --version
+cargo --version
+rust-analyzer --version
+cargo clippy --version
+```
+
+Rust Analyzer is supplied by rustup and should not also be installed through Mason.
+
+### 5. Install tree-sitter-cli
+
+The maintained nvim-treesitter branch requires `tree-sitter-cli` 0.26.1 or newer.
+
+Install the required tagged version:
+
+```bash
+cargo install tree-sitter-cli \
+  --git https://github.com/tree-sitter/tree-sitter \
+  --tag v0.26.1 \
+  --locked
+```
+
+If the build reports that it cannot find `libclang`, set its library path and retry:
+
+```bash
+export LIBCLANG_PATH="$(llvm-config --libdir)"
+
+cargo install tree-sitter-cli \
+  --git https://github.com/tree-sitter/tree-sitter \
+  --tag v0.26.1 \
+  --locked
+```
+
+Verify it:
+
+```bash
+tree-sitter --version
+which tree-sitter
+```
+
+To preserve the libclang setting:
+
+```bash
+echo 'export LIBCLANG_PATH="$(llvm-config --libdir)"' >> "$HOME/.zshrc"
+```
+
+### 6. Install RustOwl
+
+Install the RustOwl binary and its dedicated Rust toolchain using the official installer:
+
+```bash
+curl -L https://raw.githubusercontent.com/cordx56/rustowl/refs/heads/main/scripts/installer | sh
+```
+
+Add RustOwl and Cargo to Zsh's PATH:
+
+```bash
+echo 'export PATH="$HOME/.cargo/bin:$HOME/.rustowl:$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+source "$HOME/.zshrc"
+```
+
+Verify it:
+
+```bash
+rustowl --version
+which rustowl
+```
+
+Do not use `cargo install rustowl`; RustOwl needs its own pinned compiler toolchain.
+
+### 7. Install Lazygit
+
+Lazygit is required by the Snacks Lazygit mappings:
+
+```bash
+sudo add-apt-repository -y ppa:lazygit-team/release
+sudo apt update
+sudo apt install -y lazygit
+```
+
+Verify it:
+
+```bash
+lazygit --version
+```
+
+### 8. Install a Nerd Font
+
+A Nerd Font is required for icons.
+
+Install a font such as:
+
+- JetBrainsMono Nerd Font
+- FiraCode Nerd Font
+- CaskaydiaCove Nerd Font
+- Hack Nerd Font
+
+After installation, select that font in the terminal application's settings.
+
+For WSL, install the font on Windows and select it in Windows Terminal, WezTerm, or the terminal being used.
+
+### 9. Clone the configuration
+
+Back up the existing configuration:
+
+```bash
+mv "$HOME/.config/nvim" "$HOME/.config/nvim-old" 2>/dev/null || true
+mv "$HOME/.local/share/nvim" "$HOME/.local/share/nvim-old" 2>/dev/null || true
+mv "$HOME/.cache/nvim" "$HOME/.cache/nvim-old" 2>/dev/null || true
+mv "$HOME/.local/state/nvim" "$HOME/.local/state/nvim-old" 2>/dev/null || true
+```
+
+Clone this repository:
+
+```bash
+git clone https://github.com/A-Hegazi/nvc-nvim.git "$HOME/.config/nvim"
+```
+
+Start Neovim:
+
+```bash
+nvim
+```
+
+Wait for Lazy to finish installing plugins before closing Neovim.
+
+### 10. Complete the first installation
+
+Inside Neovim, run:
+
+```vim
+:Lazy sync
+:TSUpdate
+:MasonUpdate
+```
+
+Ensure the important Treesitter parsers are installed:
+
+```vim
+:TSInstall rust bash regex html yaml lua markdown markdown_inline vim vimdoc
+```
+
+Mason-nvim-dap should install codelldb automatically. If it does not:
+
+```vim
+:MasonInstall codelldb
+```
+
+There is no `:MasonInstallAll` command. Open Mason with:
+
+```vim
+:Mason
+```
+
+Restart Neovim after all installations finish.
+
+### 11. Verify the installation
+
+Run these commands inside Neovim:
+
+```vim
+:checkhealth
+:checkhealth nvim-treesitter
+:checkhealth rustaceanvim
+:checkhealth mason
+:LspInfo
+:ConformInfo
+```
+
+Open a Rust project containing `Cargo.toml` and a `.rs` file. Confirm that:
+
+- rust-analyzer attaches.
+- Rust diagnostics appear.
+- Formatting works with `<leader>z`.
+- Rust commands work under `<leader>R`.
+- `:Mason` opens.
+- `codelldb` appears as installed.
+- RustOwl works with `<leader>Ro`.
+
+### Optional dependencies
+
+The following are not required for the main Rust workflow:
+
+| Tool | Required only for |
+|---|---|
+| Go | Go development |
+| Ruby and RubyGem | Ruby development |
+| PHP and Composer | PHP development |
+| Java/Javac | Java development |
+| Julia | Julia development |
+| ImageMagick | Snacks inline image conversion |
+| Ghostscript | Rendering PDF images |
+| Tectonic or LaTeX | Rendering LaTeX equations |
+| Mermaid CLI | Rendering Mermaid diagrams |
+| Kitty, WezTerm, or Ghostty | Snacks terminal image rendering |
+| Lua 5.1 | LuaRocks plugins; currently none require it |
+| LuaSnip jsregexp | Advanced snippet placeholder transformations |
+
+Warnings about these missing optional tools can safely be ignored unless their related feature is enabled.
+
 ## Troubleshooting
 
 - Missing icons: configure a Nerd Font in the terminal.
